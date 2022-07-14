@@ -17,10 +17,28 @@ const users = [{
 
 }]
 
+const posts = [{
+  id: '1',
+  title: 'cats',
+  body: 'I love my cats.',
+  published: false
+}, {
+  id: '2',
+  title: 'dogs',
+  body: 'I like dogs less than I like cats.',
+  published: true
+}, {
+  id: '3',
+  title: 'horses',
+  body: 'I enjoy riding horses.',
+  published: true
+}]
+
 // Type definitions, application schema
 const typeDefs = `
   type Query {
     users(query: String): [User!]!
+    posts(query: String): [Post!]!
     me: User!
     post: Post!
   }
@@ -50,6 +68,19 @@ const resolvers = {
 
       return users.filter((user) => {
         return user.name.toLowerCase().includes(args.query.toLowerCase())
+      })
+    },
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts
+      }
+
+      return posts.filter((post) => {
+        const body = post.body.toLowerCase()
+        const title = post.title.toLowerCase()
+        if (body.includes(args.query.toLowerCase()) || title.includes(args.query.toLowerCase())) {
+          return post
+        }
       })
     },
     me() {
